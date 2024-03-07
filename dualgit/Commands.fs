@@ -21,16 +21,16 @@ let iterGit = List.map createGitCommand >> iter
 
 let executeGit args =
     let output = createGitCommand args |> Command.execute
-    output.ExitCode = 0
+    if output.ExitCode = 0 then None else output.Error
 
 let queryGit args =
     let output = createGitCommand args |> Command.execute
-    if output.ExitCode = 0 then output.Text else None
+    if output.ExitCode = 0 then true, output.Text else false, output.Error
 
 let getCurrentCommit () = queryGit [ "rev-parse"; "HEAD" ]
 let getCurrentBranch () = queryGit [ "name-rev"; "--name-only"; "HEAD" ]
-let checkObjectExistence object = executeGit [ "rev-parse"; "--verify"; object ]
-let checkIsAncestor child parent = executeGit [ "merge-base"; "--is-ancestor"; parent; child ]
+let checkObjectExistence object = executeGit [ "rev-parse"; "--verify"; object ] |> Option.isNone
+let checkIsAncestor child parent = executeGit [ "merge-base"; "--is-ancestor"; parent; child ] |> Option.isNone
 let createBranch branch = executeGit [ "branch"; branch ]
 
 let getOrCreateChild parent child =
@@ -40,7 +40,4 @@ let getOrCreateChild parent child =
         else
             None
     else
-        if createBranch child then
-            None
-        else
-            Some $"Branch {child} could not be created."
+        createBranch child

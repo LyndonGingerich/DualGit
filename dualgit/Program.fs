@@ -35,13 +35,18 @@ let main args =
         else
             match rest with
             | [] ->
+                let failureMessage = "Git failed to get the current commit."
+
                 match Commands.getCurrentCommit () with
-                | Some baseCommit ->
+                | true, Some baseCommit ->
                     Config.initialize baseCommit
                     0
-                | None ->
-                    print "Git failed to get the current commit."
-                    0
+                | true, None ->
+                    print failureMessage
+                    1
+                | false, error ->
+                    print (Option.defaultValue failureMessage error)
+                    1
             | [ baseCommit ] ->
                 if Commands.checkObjectExistence baseCommit then
                     Config.initialize baseCommit
@@ -119,10 +124,10 @@ let main args =
                         1
                     | Some branch ->
                         match Commands.getCurrentBranch () with
-                        | None ->
-                            print "Getting the current branch failed."
+                        | false, error ->
+                            print (Option.defaultValue "Getting the current branch failed." error)
                             1
-                        | Some currentBranch ->
+                        | true, Some currentBranch ->
                             if
                                 currentBranch <> branch
                                 && [ [ "stash"; "push" ]
@@ -135,12 +140,15 @@ let main args =
                                 1
                             elif
                                 Commands.executeGit ("commit" :: commitArgs)
-                                |> not
+                                |> Option.isNone
                             then
                                 print "Commit failed."
                                 1
                             else
                                 0
+                        | true, None ->
+                            print "Git failed to find the current branch."
+                            1
     | _ ->
         print "Command not recognized."
         1
