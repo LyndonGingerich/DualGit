@@ -1,5 +1,7 @@
 ﻿module DualGit.Program
 
+open System.IO
+
 let print = printfn "%s"
 
 let checkBranchesSet (config: Config.Config) =
@@ -163,6 +165,13 @@ let main args =
                     print error
                     1
                 | None -> 0
+    | "reset" :: rest ->
+        if rest.IsEmpty then
+            File.Delete Config.configFile
+            0
+        else
+            print "\"dualgit reset\" does not take arguments."
+            1
     | _ ->
         print "Command not recognized."
         1
