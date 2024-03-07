@@ -43,8 +43,12 @@ let main args =
                     print "Git failed to get the current commit."
                     0
             | [ baseCommit ] ->
-                Config.initialize baseCommit
-                0
+                if Commands.checkObjectExistence baseCommit then
+                    Config.initialize baseCommit
+                    0
+                else
+                    print $"Git did not find object {baseCommit}."
+                    1
             | _ ->
                 print "\"dualgit init\" takes no arguments."
                 1

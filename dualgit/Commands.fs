@@ -29,3 +29,4 @@ let queryGit args =
 
 let getCurrentCommit () = queryGit [ "rev-parse"; "HEAD" ]
 let getCurrentBranch () = queryGit [ "name-rev"; "--name-only"; "HEAD" ]
+let checkObjectExistence object = executeGit [ "rev-parse"; "--verify"; object ]
