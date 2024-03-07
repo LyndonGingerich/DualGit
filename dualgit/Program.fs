@@ -136,7 +136,7 @@ let main args =
                                 print error
                                 1
                             | None ->
-                                if Commands.executeGit ("commit" :: commitArgs) |> Option.isNone then
+                                if Commands.commit commitArgs |> Option.isNone then
                                     print "Commit failed."
                                     1
                                 else

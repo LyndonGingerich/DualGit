@@ -12,19 +12,19 @@ let rec iter commands =
         else
             iter rest
 
-let createGitCommand (args: string list) =
+let private createGitCommand (args: string list) =
     cli {
         Exec "git"
         Arguments args
     }
 
-let iterGit = List.map createGitCommand >> iter
+let private iterGit = List.map createGitCommand >> iter
 
-let executeGit args =
+let private executeGit args =
     let output = createGitCommand args |> Command.execute
     if output.ExitCode = 0 then None else output.Error
 
-let queryGit args =
+let private queryGit args =
     let output = createGitCommand args |> Command.execute
     if output.ExitCode = 0 then true, output.Text else false, output.Error
 
@@ -48,3 +48,5 @@ let smartCheckout branch =
       [ "checkout"; branch ]
       [ "stash"; "pop" ] ]
     |> iterGit
+
+let commit args = executeGit ("commit" :: args)
