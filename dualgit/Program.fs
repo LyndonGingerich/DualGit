@@ -1,13 +1,13 @@
 ﻿module DualGit.Program
 
-open Fli
-
 let print = printfn "%s"
 
 [<EntryPoint>]
 let main args =
     let config = Config.get ()
 
+    let noCurrentWorkflow = "No dualgit workflow is in progress. Please call \"dualgit init\"."
+    
     match Array.toList args with
     | "status" :: rest ->
         match rest with
@@ -35,17 +35,11 @@ let main args =
         else
             match rest with
             | [] ->
-                let baseCommitOutput =
-                    cli {
-                        Exec "git"
-                        Arguments [ "rev-parse"; "HEAD" ]
-                    }
-                    |> Command.execute
-                match baseCommitOutput with
-                | { ExitCode = 0; Text = Some baseCommit } ->
+                match Commands.getCurrentCommit () with
+                | Some baseCommit ->
                     Config.initialize baseCommit
                     0
-                | _ ->
+                | None ->
                     print "Git failed to get the current commit."
                     0
             | _ ->
@@ -54,7 +48,7 @@ let main args =
     | "set" :: rest ->
         match config with
         | None ->
-            print "No dualgit workflow is in progress. Please call \"dualgit init\"."
+            print noCurrentWorkflow
             1
         | Some config ->
             let usage = "Usage: \"dualgit set <key> <value>\""
@@ -80,6 +74,61 @@ let main args =
                 print "Unrecognized command."
                 print usage
                 1
+    | "commit" :: rest ->
+        match config with
+        | None ->
+            print noCurrentWorkflow
+            1
+        | Some config ->
+            if config.feature = "" then
+                print "No feature branch is set."
+                print "Please call \"dualgit set feature <feature branch>\"."
+                1
+            elif config.refactor = "" then
+                print "No refactor branch is set."
+                print "Please call \"dualgit set refactor <refactor branch>\"."
+                1
+            else
+                let usage = "Usage: dualgit commit [feature|refactor] <commit args>"
+                match rest with
+                | [] ->
+                    print usage
+                    1
+                | branchId :: commitArgs ->
+                    match
+                        match branchId with
+                        | "feature" -> Some config.feature
+                        | "refactor" -> Some config.refactor
+                        | _ -> None
+                    with
+                    | None ->
+                        print "\"dualgit commit\" takes either \"feature\" or \"refactor\" as its second argument."
+                        print usage
+                        1
+                    | Some branch ->
+                        match Commands.getCurrentBranch () with
+                        | None ->
+                            print "Getting the current branch failed."
+                            1
+                        | Some currentBranch ->
+                            if
+                                currentBranch <> branch
+                                && [ [ "stash"; "push" ]
+                                     [ "checkout"; branch ]
+                                     [ "stash"; "pop" ] ]
+                                   |> Commands.iterGit
+                                   |> not
+                            then
+                                print "Checkout failed."
+                                1
+                            elif
+                                Commands.executeGit ("commit" :: commitArgs)
+                                |> not
+                            then
+                                print "Commit failed."
+                                1
+                            else
+                                0
     | _ ->
         print "Command not recognized."
         1
