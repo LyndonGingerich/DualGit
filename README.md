@@ -22,13 +22,14 @@ Writes of `feature` and `refactor` to `.dualgit` should overwrite previous value
 `init`: Create the file `.dualgit`; if it already exists, fail, warning the user that a `.dualgit` workflow is already in progress.
 `set`: Take two arguments. The first must be either "feature" or "refactor"; the second is a Git branch name. Write the second argument to `.dualgit` using the first argument as the key.
 `commit`: Take any number of arguments. The first must be either `feature` or `refactor`. Check out the branch stored under that key in `.dualgit` (or fail if it is not defined in `.dualgit`), then call `git commit` using the remaining arguments as arguments.
-`switch`: Take zero or one arguments. If no arguments, check out `feature` if `refactor` is checked out, or `refactor` if `feature` is checked out; otherwise, fail. If one argument, it should be either "refactor" or "feature" to indicate which branch to check out.
 `update`: Check out `feature`, then merge `refactor` into `feature`.
 `reset`: Delete `.dualgit`.
 # Future
 ## Implement `split`
 If no flags, create a new branch on existing branch "develop" with the name of `feature` with "-split" appended, hereafter referred to as `split` (or fail if that branch already exists); store the list of hashes of commits  hashes under "split_commits" in `.dualgit`; for each hash in `split_commits`, cherry-pick that hash onto `split`; and clear `split_commits`.
 Also implement `--abort` and `--continue`.
+## Implement `switch`
+Take zero or one arguments. If no arguments, check out `feature` if `refactor` is checked out, or `refactor` if `feature` is checked out; otherwise, fail. If one argument, it should be either "refactor" or "feature" to indicate which branch to check out.
 ## Other
 - Ensure that `feature` and `refactor` are branches
 - Add tests
