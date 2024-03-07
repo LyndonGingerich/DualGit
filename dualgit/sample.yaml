@@ -1,0 +1,7 @@
+﻿feature: feature_branch
+refactor: refactor_branch
+split_commits:
+  - a0411bc73dbc845150008fe17c8736718188598c
+  - a0411bc73dbc845150008fe17c8736718188598d
+  - a0411bc73dbc845150008fe17c8736718188598e
+base: base_branch
