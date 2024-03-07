@@ -2,23 +2,11 @@
 
 open Fli
 
-let rec iter commands =
-    match commands with
-    | [] -> None
-    | command: ExecContext :: rest ->
-        let output = Command.execute command
-        if output.ExitCode <> 0 then
-            output.Error
-        else
-            iter rest
-
 let private createGitCommand (args: string list) =
     cli {
         Exec "git"
         Arguments args
     }
-
-let private iterGit = List.map createGitCommand >> iter
 
 let private executeGit args =
     let output = createGitCommand args |> Command.execute
@@ -27,6 +15,14 @@ let private executeGit args =
 let private queryGit args =
     let output = createGitCommand args |> Command.execute
     if output.ExitCode = 0 then true, output.Text else false, output.Error
+
+let rec private iterGit commands =
+    match commands with
+    | [] -> None
+    | command :: rest ->
+        match executeGit command with
+        | Some error -> Some error
+        | None -> iterGit rest
 
 let getCurrentCommit () = queryGit [ "rev-parse"; "HEAD" ]
 let getCurrentBranch () = queryGit [ "name-rev"; "--name-only"; "HEAD" ]
@@ -49,7 +45,10 @@ let smartCheckout branch =
       [ "stash"; "pop" ] ]
     |> iterGit
 
-let commit args = executeGit ("commit" :: args)
+let commit args =
+    [ [ "add"; "*" ]
+      "commit" :: args  ]
+    |> iterGit
 
 let merge args into from =
     let needsCheckout =
