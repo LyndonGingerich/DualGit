@@ -42,6 +42,9 @@ let main args =
                 | None ->
                     print "Git failed to get the current commit."
                     0
+            | [ baseCommit ] ->
+                Config.initialize baseCommit
+                0
             | _ ->
                 print "\"dualgit init\" takes no arguments."
                 1
