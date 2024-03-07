@@ -2,6 +2,7 @@
 Two Git branches: 
 - For cleanup and refactoring for ease of reading, debugging, and testing
 - For the actual feature and tests
+
 Basic commands:
 - `commit refactor`: Check out the refactor branch, commit, return to previous branch
 - `commit feature`: Check out the feature branch, commit
