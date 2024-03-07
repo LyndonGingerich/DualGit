@@ -30,3 +30,17 @@ let queryGit args =
 let getCurrentCommit () = queryGit [ "rev-parse"; "HEAD" ]
 let getCurrentBranch () = queryGit [ "name-rev"; "--name-only"; "HEAD" ]
 let checkObjectExistence object = executeGit [ "rev-parse"; "--verify"; object ]
+let checkIsAncestor child parent = executeGit [ "merge-base"; "--is-ancestor"; parent; child ]
+let createBranch branch = executeGit [ "branch"; branch ]
+
+let getOrCreateChild parent child =
+    if checkObjectExistence child then
+        if checkIsAncestor child parent |> not then
+            Some $"{child} is not a descendant of base object {parent}."
+        else
+            None
+    else
+        if createBranch child then
+            None
+        else
+            Some $"Branch {child} could not be created."

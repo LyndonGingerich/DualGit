@@ -62,19 +62,24 @@ let main args =
             let tooManyArgs () =
                 print $"\"dualgit set\" takes only two arguments. {usage}"
                 1
+
+            let setBranch branch =
+                match Commands.getOrCreateChild config.``base`` branch with
+                | Some error ->
+                    print error
+                    1
+                | None ->
+                    0
+
             match rest with
             | "feature" :: featureBranch :: rest' ->
                 if rest'.IsEmpty then
-                    config.feature <- featureBranch
-                    Config.save config
-                    0
+                    setBranch featureBranch
                 else
                     tooManyArgs ()
             | "refactor" :: refactorBranch :: rest' ->
                 if rest'.IsEmpty then
-                    config.refactor <- refactorBranch
-                    Config.save config
-                    0
+                    setBranch refactorBranch
                 else
                     tooManyArgs ()
             | _ ->
