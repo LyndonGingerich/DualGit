@@ -2,6 +2,13 @@
 
 let print = printfn "%s"
 
+let checkBranchesSet (config: Config.Config) =
+    if config.feature = "" then
+        Some "No feature branch is set.\nPlease call \"dualgit set feature <feature branch>\"."
+    elif config.refactor = "" then
+        Some "No refactor branch is set.\nPlease call \"dualgit set refactor <refactor branch>\"."
+    else None
+
 [<EntryPoint>]
 let main args =
     let config = Config.get ()
@@ -97,15 +104,11 @@ let main args =
             print noCurrentWorkflow
             1
         | Some config ->
-            if config.feature = "" then
-                print "No feature branch is set."
-                print "Please call \"dualgit set feature <feature branch>\"."
+            match checkBranchesSet config with
+            | Some error ->
+                print error
                 1
-            elif config.refactor = "" then
-                print "No refactor branch is set."
-                print "Please call \"dualgit set refactor <refactor branch>\"."
-                1
-            else
+            | None ->
                 let usage = "Usage: dualgit commit [feature|refactor] <commit args>"
                 match rest with
                 | [] ->
@@ -144,6 +147,22 @@ let main args =
                         | true, None ->
                             print "Git failed to find the current branch."
                             1
+    | "update" :: rest ->
+        match config with
+        | None ->
+            print noCurrentWorkflow
+            1
+        | Some config ->
+            match checkBranchesSet config with
+            | Some error ->
+                print error
+                1
+            | None ->
+                match Commands.merge rest config.feature config.refactor with
+                | Some error ->
+                    print error
+                    1
+                | None -> 0
     | _ ->
         print "Command not recognized."
         1

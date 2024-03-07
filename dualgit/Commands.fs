@@ -50,3 +50,18 @@ let smartCheckout branch =
     |> iterGit
 
 let commit args = executeGit ("commit" :: args)
+
+let merge args into from =
+    let needsCheckout =
+        match getCurrentBranch () with
+        | true, Some branch ->
+            branch <> into
+        | _ -> true
+    
+    match
+        if not needsCheckout then None
+        else smartCheckout into
+    with
+    | Some error -> Some error
+    | None ->
+        executeGit ([ "merge"; from ] @ args)
