@@ -128,20 +128,19 @@ let main args =
                             print (Option.defaultValue "Getting the current branch failed." error)
                             1
                         | true, Some currentBranch ->
-                            if
-                                currentBranch <> branch
-                                && Commands.smartCheckout branch |> not
-                            then
-                                print "Checkout failed."
+                            match
+                                if currentBranch = branch then None
+                                else Commands.smartCheckout branch
+                            with
+                            | Some error ->
+                                print error
                                 1
-                            elif
-                                Commands.executeGit ("commit" :: commitArgs)
-                                |> Option.isNone
-                            then
-                                print "Commit failed."
-                                1
-                            else
-                                0
+                            | None ->
+                                if Commands.executeGit ("commit" :: commitArgs) |> Option.isNone then
+                                    print "Commit failed."
+                                    1
+                                else
+                                    0
                         | true, None ->
                             print "Git failed to find the current branch."
                             1

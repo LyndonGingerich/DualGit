@@ -4,10 +4,11 @@ open Fli
 
 let rec iter commands =
     match commands with
-    | [] -> true
+    | [] -> None
     | command: ExecContext :: rest ->
-        if (Command.execute command).ExitCode <> 0 then
-            false
+        let output = Command.execute command
+        if output.ExitCode <> 0 then
+            output.Error
         else
             iter rest
 
