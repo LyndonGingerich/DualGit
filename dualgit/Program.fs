@@ -1,5 +1,7 @@
 ﻿module DualGit.Program
 
+open Fli
+
 let print = printfn "%s"
 
 [<EntryPoint>]
@@ -32,11 +34,22 @@ let main args =
             1
         else
             match rest with
-            | [ baseCommit ] ->
-                Config.initialize baseCommit
-                0
+            | [] ->
+                let baseCommitOutput =
+                    cli {
+                        Exec "git"
+                        Arguments [ "rev-parse"; "HEAD" ]
+                    }
+                    |> Command.execute
+                match baseCommitOutput with
+                | { ExitCode = 0; Text = Some baseCommit } ->
+                    Config.initialize baseCommit
+                    0
+                | _ ->
+                    print "Git failed to get the current commit."
+                    0
             | _ ->
-                print "\"dualgit init\" takes one argument: The commit with which to start the workflow."
+                print "\"dualgit init\" takes no arguments."
                 1
     | _ ->
         print "Command not recognized."
