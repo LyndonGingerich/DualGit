@@ -51,6 +51,35 @@ let main args =
             | _ ->
                 print "\"dualgit init\" takes no arguments."
                 1
+    | "set" :: rest ->
+        match config with
+        | None ->
+            print "No dualgit workflow is in progress. Please call \"dualgit init\"."
+            1
+        | Some config ->
+            let usage = "Usage: \"dualgit set <key> <value>\""
+            let tooManyArgs () =
+                print $"\"dualgit set\" takes only two arguments. {usage}"
+                1
+            match rest with
+            | "feature" :: featureBranch :: rest' ->
+                if rest'.IsEmpty then
+                    config.feature <- featureBranch
+                    Config.save config
+                    0
+                else
+                    tooManyArgs ()
+            | "refactor" :: refactorBranch :: rest' ->
+                if rest'.IsEmpty then
+                    config.refactor <- refactorBranch
+                    Config.save config
+                    0
+                else
+                    tooManyArgs ()
+            | _ ->
+                print "Unrecognized command."
+                print usage
+                1
     | _ ->
         print "Command not recognized."
         1

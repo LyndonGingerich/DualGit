@@ -7,13 +7,15 @@ let configFile = ".dualgit"
 
 type Config = YamlConfig<"sample.yaml">
 
+let save (config: Config) = config.Save configFile
+
 let initialize baseCommit =
     let config = Config()
     config.``base`` <- baseCommit
     config.feature <- ""
     config.refactor <- ""
     config.split_commits <- [||]
-    config.Save configFile
+    save config
 
 let get () =
     if File.Exists configFile then
@@ -21,6 +23,4 @@ let get () =
         config.Load configFile
         config |> Some
     else
-        None 
-
-let save (config: Config) = config.Save configFile
+        None
