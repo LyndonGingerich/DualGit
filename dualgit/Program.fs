@@ -130,11 +130,7 @@ let main args =
                         | true, Some currentBranch ->
                             if
                                 currentBranch <> branch
-                                && [ [ "stash"; "push" ]
-                                     [ "checkout"; branch ]
-                                     [ "stash"; "pop" ] ]
-                                   |> Commands.iterGit
-                                   |> not
+                                && Commands.smartCheckout branch |> not
                             then
                                 print "Checkout failed."
                                 1

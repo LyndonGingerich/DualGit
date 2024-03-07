@@ -41,3 +41,9 @@ let getOrCreateChild parent child =
             None
     else
         createBranch child
+
+let smartCheckout branch =
+    [ [ "stash"; "push" ]
+      [ "checkout"; branch ]
+      [ "stash"; "pop" ] ]
+    |> iterGit
