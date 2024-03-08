@@ -7,6 +7,7 @@ Basic commands:
 - `commit refactor`: Check out the refactor branch, commit, return to previous branch
 - `commit feature`: Check out the feature branch, commit
 - `update`: Check out the feature branch, merge refactor branch into feature branch
+
 In the end, the refactor branch must be merged before the feature branch.
 Though building a tool to disentangle the two if possible also sounds fun...
 # Config
