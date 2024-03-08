@@ -35,3 +35,4 @@ Take zero or one arguments. If no arguments, check out `feature` if `refactor` i
 ## Other
 - Ensure that `feature` and `refactor` are branches
 - Add tests
+- Do not assume that the user always wishes to commit all changed files
