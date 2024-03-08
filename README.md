@@ -16,6 +16,7 @@ While active, `dualgit` uses the YAML config file `.dualgit` in the working dire
 - `feature` and `refactor`: Names of Git branches. Hereafter, feature refers to the branch name stored under "feature" in .dualgit, and refactor refers to the branch name stored under refactor in .dualgit.
 - `base`: An ancestor of both `feature` and `refactor`.
 - `split_commits`: A list of commits being cherry-picked by the `split` command, for recovery in case of failure (such as due to conflicts).
+- `switch`: Whichever of `feature` or `refactor` is checked out, check out the other one.
 # Common behavior
 If a command other than `init` is called when `.dualgit` does not exist, the command should fail, warning the user to call `dualgit init` first.
 If at any point a command attempts to use either `feature` or `refactor` when it is not defined in `.dualgit`, that command should fail, warning the user to define the required branch first.
@@ -30,8 +31,6 @@ Writes of `feature` and `refactor` to `.dualgit` should overwrite previous value
 ## Implement `split`
 If no flags, create a new branch on existing branch "develop" with the name of `feature` with "-split" appended, hereafter referred to as `split` (or fail if that branch already exists); store the list of hashes of commits  hashes under "split_commits" in `.dualgit`; for each hash in `split_commits`, cherry-pick that hash onto `split`; and clear `split_commits`.
 Also implement `--abort` and `--continue`.
-## Implement `switch`
-Take zero or one arguments. If no arguments, check out `feature` if `refactor` is checked out, or `refactor` if `feature` is checked out; otherwise, fail. If one argument, it should be either "refactor" or "feature" to indicate which branch to check out.
 ## Other
 - Ensure that `feature` and `refactor` are branches
 - Add tests

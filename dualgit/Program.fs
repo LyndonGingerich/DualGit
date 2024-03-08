@@ -181,6 +181,40 @@ let main args =
         else
             print "\"dualgit reset\" does not take arguments."
             1
+    | "switch" :: rest ->
+        match config with
+        | None ->
+            print noCurrentWorkflow
+            1
+        | Some config ->
+            match checkBranchesSet config with
+            | Some error ->
+                print error
+                1
+            | None ->
+                if not rest.IsEmpty then
+                    print "\"dualgit switch\" takes no arguments."
+                    1
+                else
+                    match Commands.getCurrentBranch () with
+                    | false, error ->
+                        print (Option.defaultValue "Could not get current branch" error)
+                        1
+                    | true, currentBranch ->
+                        match
+                            if currentBranch = Some config.feature then Some config.refactor
+                            elif currentBranch = Some config.refactor then Some config.feature
+                            else None
+                        with
+                        | None ->
+                            print $"{currentBranch} is neither \"feature\" nor \"refactor\"."
+                            1
+                        | Some branch ->
+                            match Commands.smartCheckout branch with
+                            | Some error ->
+                                print error
+                                1
+                            | None -> 0
     | _ ->
         print "Command not recognized."
         1
