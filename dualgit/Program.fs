@@ -149,10 +149,11 @@ let main args =
                                 print error
                                 1
                             | None ->
-                                if Commands.commit commitArgs |> Option.isNone then
-                                    print "Commit failed."
+                                match Commands.commit commitArgs with
+                                | Some error ->
+                                    print error
                                     1
-                                else
+                                | None ->
                                     0
                         | true, None ->
                             print "Git failed to find the current branch."
