@@ -24,3 +24,14 @@ let get () =
         config |> Some
     else
         None
+
+let getStatus (config: Config) =
+    [ $"Base commit: {config.``base``}"
+      $"Feature branch: {config.feature}"
+      $"Refactor branch: {config.refactor}"
+
+      if config.split_commits.Count = 0 then
+          "No \"split\" operation is in progress."
+      else
+          "A \"split\" operation is in progress." ]
+    |> String.concat "\n"

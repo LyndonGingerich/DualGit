@@ -28,15 +28,7 @@ let main args =
                 print "No dualgit workflow is in progress."
                 0
             | Some config ->
-                print $"Base commit: {config.``base``}"
-                print $"Feature branch: {config.feature}"
-                print $"Refactor branch: {config.refactor}"
-
-                if config.split_commits.Count = 0 then
-                    print "No \"split\" operation is in progress."
-                else
-                    print "A \"split\" operation is in progress."
-
+                print (Config.getStatus config)
                 0
         | _ ->
             print "\"dualgit status\" takes no arguments."
