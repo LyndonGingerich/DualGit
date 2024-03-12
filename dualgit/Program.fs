@@ -47,13 +47,13 @@ let main args =
                 let failureMessage = "Git failed to get the current commit."
 
                 match Commands.getCurrentCommit () with
-                | true, Some baseCommit ->
+                | Result.Ok (Some baseCommit) ->
                     Config.initialize baseCommit
                     0
-                | true, None ->
+                | Result.Ok None ->
                     print failureMessage
                     1
-                | false, error ->
+                | Result.Error error ->
                     print (Option.defaultValue failureMessage error)
                     1
             | [ baseCommit ] ->
@@ -137,10 +137,10 @@ let main args =
                         1
                     | Some branch ->
                         match Commands.getCurrentBranch () with
-                        | false, error ->
+                        | Result.Error error ->
                             print (Option.defaultValue "Getting the current branch failed." error)
                             1
-                        | true, Some currentBranch ->
+                        | Result.Ok (Some currentBranch) ->
                             match
                                 if currentBranch = branch then None
                                 else Commands.smartCheckout branch
@@ -155,7 +155,7 @@ let main args =
                                     1
                                 | None ->
                                     0
-                        | true, None ->
+                        | Result.Ok None ->
                             print "Git failed to find the current branch."
                             1
     | "update" :: rest ->
@@ -197,10 +197,10 @@ let main args =
                     1
                 else
                     match Commands.getCurrentBranch () with
-                    | false, error ->
+                    | Result.Error error ->
                         print (Option.defaultValue "Could not get current branch" error)
                         1
-                    | true, currentBranch ->
+                    | Result.Ok currentBranch ->
                         match
                             if currentBranch = Some config.feature then Some config.refactor
                             elif currentBranch = Some config.refactor then Some config.feature

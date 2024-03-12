@@ -14,7 +14,7 @@ let private executeGit args =
 
 let private queryGit args =
     let output = createGitCommand args |> Command.execute
-    if output.ExitCode = 0 then true, output.Text else false, output.Error
+    if output.ExitCode = 0 then Result.Ok output.Text else Result.Error output.Error
 
 let rec private iterGit commands =
     match commands with
@@ -53,7 +53,7 @@ let commit args =
 let merge args into from =
     let needsCheckout =
         match getCurrentBranch () with
-        | true, Some branch ->
+        | Result.Ok (Some branch) ->
             branch <> into
         | _ -> true
     
