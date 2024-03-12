@@ -9,14 +9,16 @@ let checkBranchesSet (config: Config.Config) =
         Some "No feature branch is set.\nPlease call \"dualgit set feature <feature branch>\"."
     elif config.refactor = "" then
         Some "No refactor branch is set.\nPlease call \"dualgit set refactor <refactor branch>\"."
-    else None
+    else
+        None
 
 [<EntryPoint>]
 let main args =
     let config = Config.get ()
 
-    let noCurrentWorkflow = "No dualgit workflow is in progress. Please call \"dualgit init\"."
-    
+    let noCurrentWorkflow =
+        "No dualgit workflow is in progress. Please call \"dualgit init\"."
+
     match Array.toList args with
     | "status" :: rest ->
         match rest with
@@ -29,10 +31,12 @@ let main args =
                 print $"Base commit: {config.``base``}"
                 print $"Feature branch: {config.feature}"
                 print $"Refactor branch: {config.refactor}"
+
                 if config.split_commits.Count = 0 then
                     print "No \"split\" operation is in progress."
                 else
                     print "A \"split\" operation is in progress."
+
                 0
         | _ ->
             print "\"dualgit status\" takes no arguments."
@@ -47,7 +51,7 @@ let main args =
                 let failureMessage = "Git failed to get the current commit."
 
                 match Commands.getCurrentCommit () with
-                | Result.Ok (Some baseCommit) ->
+                | Result.Ok(Some baseCommit) ->
                     Config.initialize baseCommit
                     0
                 | Result.Ok None ->
@@ -73,11 +77,13 @@ let main args =
             1
         | Some config ->
             let usage = "Usage: \"dualgit set <key> <value>\""
+
             let tooManyArgs () =
                 print $"\"dualgit set\" takes only two arguments. {usage}"
                 1
 
-            let setBranch branch = Commands.getOrCreateChild config.``base`` branch
+            let setBranch branch =
+                Commands.getOrCreateChild config.``base`` branch
 
             match rest with
             | "feature" :: featureBranch :: rest' ->
@@ -120,6 +126,7 @@ let main args =
                 1
             | None ->
                 let usage = "Usage: dualgit commit [feature|refactor] <commit args>"
+
                 match rest with
                 | [] ->
                     print usage
@@ -140,10 +147,12 @@ let main args =
                         | Result.Error error ->
                             print (Option.defaultValue "Getting the current branch failed." error)
                             1
-                        | Result.Ok (Some currentBranch) ->
+                        | Result.Ok(Some currentBranch) ->
                             match
-                                if currentBranch = branch then None
-                                else Commands.smartCheckout branch
+                                if currentBranch = branch then
+                                    None
+                                else
+                                    Commands.smartCheckout branch
                             with
                             | Some error ->
                                 print error
@@ -153,8 +162,7 @@ let main args =
                                 | Some error ->
                                     print error
                                     1
-                                | None ->
-                                    0
+                                | None -> 0
                         | Result.Ok None ->
                             print "Git failed to find the current branch."
                             1
@@ -202,9 +210,12 @@ let main args =
                         1
                     | Result.Ok currentBranch ->
                         match
-                            if currentBranch = Some config.feature then Some config.refactor
-                            elif currentBranch = Some config.refactor then Some config.feature
-                            else None
+                            if currentBranch = Some config.feature then
+                                Some config.refactor
+                            elif currentBranch = Some config.refactor then
+                                Some config.feature
+                            else
+                                None
                         with
                         | None ->
                             print $"{currentBranch} is neither \"feature\" nor \"refactor\"."
