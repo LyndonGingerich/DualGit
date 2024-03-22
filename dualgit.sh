@@ -15,7 +15,7 @@ fi
 if [ $# -lt 1 ]
 then
     echo "Valid commands: status, init, set, commit, update, reset, switch"
-    exit 1
+    exit 0
 fi
 
 if [ "$1" = "status" ]
