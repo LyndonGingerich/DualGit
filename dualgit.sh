@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
 
+config_vars=(
+    "base"
+    "feature"
+    "refactor"
+    "split_commits"
+)
+
+print_config() {
+    for var in "${config_vars[@]}"
+    do
+        declare -n var_ref=$var
+        if [[ -v var_ref ]]
+        then echo "$var=${var_ref}"
+        fi
+    done
+}
+
+write_config () {
+    print_config > .dualgit
+}
+
 # 0 -> true
 # 1 -> false
 is_initialized=1
