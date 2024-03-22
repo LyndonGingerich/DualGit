@@ -80,3 +80,56 @@ then
     echo "base=\"$current_commit\"" > .dualgit
     exit 0
 fi
+
+no_workflow_in_progress="No dualgit workflow is in progress. Please call \"dualgit init\"."
+
+if [ "$1" == "set" ]
+then
+    usage="Usage: \"dualgit set <key> <value>\""
+    second_param_usage="\"dualgit set\" should be called with param \"feature\" or \"refactor\"."
+
+    if [ $is_initialized -eq 1 ]
+    then
+        echo "$no_workflow_in_progress" >&2
+        exit 1
+    fi
+
+    if [ $# -ne 3 ]
+    then
+        echo "$usage" >&2
+        exit 1
+    fi
+
+    if [ ! -v "base" ]
+    then
+        echo "A dualgit workflow is running, but \"base\" is not set." >&2
+        echo "This should not happen." >&2
+        exit 1
+    fi
+
+    if [ "$2" == "feature" ]
+    then 
+        feature="$3"
+        to_check="$3"
+    elif [ "$2" == "refactor" ]
+    then 
+        refactor="$3"
+        to_check="$3"
+    else
+        echo "$second_param_usage" >&2
+        exit 1
+    fi
+
+    if git rev-parse --verify "$to_check" >/dev/null 2>&1
+    then
+        if ! git merge-base --is-ancestor "$base" "$to_check"
+        then
+            echo "$2 is not a descendant of base object $base." >&2
+            exit 1
+        fi
+    else
+        git branch "$to_check"
+    fi
+
+    write_config
+fi
