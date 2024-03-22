@@ -18,7 +18,7 @@ then
     exit 0
 fi
 
-if [ "$1" = "status" ]
+if [ "$1" == "status" ]
 then
     if [ $# -gt 1 ]
     then
@@ -36,7 +36,7 @@ then
     exit 0
 fi
 
-if [ "$1" = "init" ]
+if [ "$1" == "init" ]
 then
     if [ $is_initialized ]
     then
