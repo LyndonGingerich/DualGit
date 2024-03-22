@@ -22,7 +22,7 @@ if [ "$1" == "status" ]
 then
     if [ $# -gt 1 ]
     then
-        echo "\"dualgit status\" takes no arguments."
+        echo "\"dualgit status\" takes no arguments." >&2
         exit 1
     fi
     
@@ -40,13 +40,13 @@ if [ "$1" == "init" ]
 then
     if [ $is_initialized ]
     then
-        echo "Another dualgit workflow is already running."
+        echo "Another dualgit workflow is already running." >&2
         exit 1
     fi
 
     if [ $# -gt 2 ]
     then
-        echo "Usage: dualgit init [base_commit]"
+        echo "Usage: dualgit init [base_commit]" >&2
         exit 1
     fi
 
