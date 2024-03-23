@@ -23,6 +23,27 @@ write_config () {
     print_config > .dualgit
 }
 
+check_is_set() {
+    if [[ ! -v "$1" ]]
+    then
+        echo "$2" >&2
+        exit 1
+    fi
+}
+
+check_feature_set() {
+    check_is_set "feature" "Feature branch is not set.\nPlease call \"dualgit set feature <feature branch>\"."
+}
+
+check_refactor_set() {
+    check_is_set "refactor" "Refactor branch is not set.\nPlease call \"dualgit set refactor <refactor branch>\"."
+}
+
+check_branches_set() {
+    check_feature_set
+    check_refactor_set
+}
+
 is_initialized=1
 
 if [ -f .dualgit ]
@@ -152,22 +173,12 @@ then
 
     if [ "$2" == "feature" ]
     then
-        if [[ ! -v feature ]]
-        then
-            echo "Feature branch is not set." >&2
-            echo "Please call \"dualgit set feature <feature branch>\"." >&2
-            exit 1
-        fi
+        check_feature_set
         
         target="$feature"
     elif [ "$2" == "refactor" ]
     then
-        if [[ ! -v refactor ]]
-        then
-            echo "Refactor branch is not set." >&2
-            echo "Please call \"dualgit set refactor <refactor branch>\"." >&2
-            exit 1
-        fi
+        check_refactor_set
         
         target="$refactor"
     fi
