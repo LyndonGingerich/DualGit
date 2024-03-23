@@ -217,3 +217,26 @@ then
 
     rm .dualgit
 fi
+
+if [ "$1" == "switch" ]
+then
+    check_is_initialized
+    check_branches_set
+
+    if [ $# -gt 1 ]
+    then
+        echo "\"dualgit switch\" takes no arguments." >&2
+        exit 1
+    fi
+
+    current_branch="$(git branch --show-current)"
+
+    if [ "$current_branch" == "$feature" ]
+    then smart_checkout "$refactor"
+    elif [ "$current_branch" == "$refactor" ]
+    then smart_checkout "$feature"
+    else
+        echo "Current branch \"$current_branch\" is neither \"feature\" nor \"refactor\"." >&2
+        exit 1
+    fi
+fi
