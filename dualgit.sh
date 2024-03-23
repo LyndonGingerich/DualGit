@@ -133,3 +133,48 @@ then
 
     write_config
 fi
+
+if [ "$1" == "commit" ]
+then
+    if [ $is_initialized -ne 0 ]
+    then
+        echo "$no_workflow_in_progress" >&2
+        exit 1
+    fi
+
+    if [ $# -lt 2 ]
+    then
+        echo "Usage: dualgit commit [feature|refactor] <commit args>"
+        exit 0
+    fi
+
+    current_branch="$(git branch --show-current)"
+
+    if [ "$2" == "feature" ]
+    then
+        if [[ ! -v feature ]]
+        then
+            echo "Feature branch is not set." >&2
+            echo "Please call \"dualgit set feature <feature branch>\"." >&2
+            exit 1
+        fi
+        
+        target="$feature"
+    elif [ "$2" == "refactor" ]
+    then
+        if [[ ! -v refactor ]]
+        then
+            echo "Refactor branch is not set." >&2
+            echo "Please call \"dualgit set refactor <refactor branch>\"." >&2
+            exit 1
+        fi
+        
+        target="$refactor"
+    fi
+
+    if [ "$target" != "$current_branch" ]
+    then smart_checkout "$target"
+    fi
+
+    git commit "${@:3}"
+fi
