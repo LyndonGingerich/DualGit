@@ -204,3 +204,16 @@ then
     git checkout "$feature"
     git merge "$refactor" "${@:2}"
 fi
+
+if [ "$1" == "reset" ]
+then
+    check_is_initialized
+    
+    if [ $# -gt 1 ]
+    then
+        echo "\"dualgit reset\" takes no arguments." >&2
+        exit 1
+    fi
+
+    rm .dualgit
+fi
