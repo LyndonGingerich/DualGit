@@ -67,7 +67,7 @@ check_is_initialized() {
 
 if [ $# -lt 1 ]
 then
-    echo "Valid commands: status, init, set, commit, update, reset, switch"
+    echo "Valid commands: status, init, set, commit, merge, reset, switch"
     exit 0
 fi
 
@@ -195,4 +195,12 @@ then
     fi
 
     git commit "${@:3}"
+fi
+
+if [ "$1" == "merge" ]
+then
+    check_is_initialized
+    check_branches_set
+    git checkout "$feature"
+    git merge "$refactor" "${@:2}"
 fi
