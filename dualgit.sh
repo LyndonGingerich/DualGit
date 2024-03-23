@@ -44,6 +44,7 @@ check_branches_set() {
     check_refactor_set
 }
 
+
 is_initialized=1
 
 if [ -f .dualgit ]
@@ -53,6 +54,16 @@ fi
 if [ $is_initialized -eq 0 ]
 then source .dualgit
 fi
+
+
+check_is_initialized() {
+    if [ $is_initialized -ne 0 ]
+    then
+        echo "No dualgit workflow is in progress. Please call \"dualgit init\"." >&2
+        exit 1
+    fi
+}
+
 
 if [ $# -lt 1 ]
 then
@@ -102,18 +113,12 @@ then
     exit 0
 fi
 
-no_workflow_in_progress="No dualgit workflow is in progress. Please call \"dualgit init\"."
-
 if [ "$1" == "set" ]
 then
     usage="Usage: \"dualgit set <key> <value>\""
     second_param_usage="\"dualgit set\" should be called with param \"feature\" or \"refactor\"."
 
-    if [ $is_initialized -eq 1 ]
-    then
-        echo "$no_workflow_in_progress" >&2
-        exit 1
-    fi
+    check_is_initialized
 
     if [ $# -ne 3 ]
     then
@@ -157,11 +162,7 @@ fi
 
 if [ "$1" == "commit" ]
 then
-    if [ $is_initialized -ne 0 ]
-    then
-        echo "$no_workflow_in_progress" >&2
-        exit 1
-    fi
+    check_is_initialized
 
     if [ $# -lt 2 ]
     then
