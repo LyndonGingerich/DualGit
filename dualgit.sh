@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Boolean convention: 0 for true, 1 for false
+
 config_vars=(
     "base"
     "feature"
@@ -21,8 +23,6 @@ write_config () {
     print_config > .dualgit
 }
 
-# 0 -> true
-# 1 -> false
 is_initialized=1
 
 if [ -f .dualgit ]
