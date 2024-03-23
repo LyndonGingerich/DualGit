@@ -9,6 +9,8 @@ config_vars=(
     "split_commits"
 )
 
+usage="Valid commands: status, init, set, commit, merge, reset, switch"
+
 print_config() {
     for var in "${config_vars[@]}"
     do
@@ -67,7 +69,7 @@ check_is_initialized() {
 
 if [ $# -lt 1 ]
 then
-    echo "Valid commands: status, init, set, commit, merge, reset, switch"
+    echo "$usage"
     exit 0
 fi
 
@@ -240,3 +242,6 @@ then
         exit 1
     fi
 fi
+
+echo "$usage" >&2
+exit 1
