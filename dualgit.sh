@@ -120,6 +120,12 @@ then
 
     check_is_initialized
 
+    if [ $# -eq 1 ]
+    then
+        echo "$usage"
+        exit 0
+    fi
+
     if [ $# -ne 3 ]
     then
         echo "$usage" >&2
@@ -164,7 +170,7 @@ if [ "$1" == "commit" ]
 then
     check_is_initialized
 
-    if [ $# -lt 2 ]
+    if [ $# -eq 1 ]
     then
         echo "Usage: dualgit commit [feature|refactor] <commit args>"
         exit 0
